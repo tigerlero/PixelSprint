@@ -1,10 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!-- project_detail.html -->
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block content %}
+  <div class="container mt-5">
+    <h1>{{ project.title }}</h1>
+    <p>{{ project.description }}</p>
+    <!-- Add more details as needed -->
+
+    <div class="btn-group" role="group" aria-label="Project Actions">
+      <a href="{% url 'update_project' project.id %}" class="btn btn-primary">Update Project</a>
+      <a href="{% url 'delete_project' project.id %}" class="btn btn-danger">Delete Project</a>
+      <a href="{% url 'project_list' %}" class="btn btn-secondary">Back to Projects</a>
+    </div>
+  </div>
+{% endblock %}

@@ -37,6 +37,19 @@ class Project(models.Model):
 
 
 class Task(models.Model):
+    STATUS_CHOICES = [
+        ('To Do', 'To Do'),
+        ('In Progress', 'In Progress'),
+        ('Review', 'Review'),
+        ('Testing', 'Testing'),
+        ('Done', 'Done'),
+    ]
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='To Do'
+    )
     title = models.CharField(max_length=255)
     description = models.TextField()
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
@@ -77,6 +90,7 @@ class Note(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     xp_reward = models.PositiveIntegerField(default=1)
     category = models.CharField(max_length=50, blank=True, null=True)
+    assigned_to = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.title

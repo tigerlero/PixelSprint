@@ -1,0 +1,26 @@
+<!-- note_list.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h1>Notes</h1>
+
+    {% for assigned_to, projects in grouped_notes.items %}
+      <h2>{{ assigned_to }}</h2>
+
+      {% for project, notes in projects.items %}
+        <h3>{{ project }}</h3>
+
+        <ul class="list-group">
+          {% for note in notes %}
+            <li class="list-group-item">
+              <a href="{% url 'note_detail' note.id %}">{{ note.title }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endfor %}
+    {% endfor %}
+
+    <a href="{% url 'create_note' %}" class="btn btn-primary mt-3">Create Note</a>
+  </div>
+{% endblock %}

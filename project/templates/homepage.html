@@ -1,0 +1,33 @@
+<!-- homepage.html -->
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-8">
+        <h1>Welcome to Your App!</h1>
+        <p>This is the place where your project management journey begins.</p>
+
+        <h2>Key Features:</h2>
+        <ul>
+          <li>Effortlessly manage your projects.</li>
+          <li>Assign tasks and track progress.</li>
+          <li>Take notes and stay organized.</li>
+          <li>Explore user profiles and collaborations.</li>
+        </ul>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Get Started</h5>
+            <p class="card-text">Ready to boost your productivity? Start using Your App today!</p>
+            <a href="{% url 'project_list' %}" class="btn btn-primary">Explore Projects</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

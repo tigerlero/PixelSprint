@@ -1,0 +1,16 @@
+<!-- note_detail.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h1>{{ note.title }}</h1>
+    <p>{{ note.content }}</p>
+    <!-- Add more details as needed -->
+
+    <div class="btn-group" role="group" aria-label="Note Actions">
+      <a href="{% url 'update_note' note.id %}" class="btn btn-primary">Update Note</a>
+      <a href="{% url 'delete_note' note.id %}" class="btn btn-danger">Delete Note</a>
+      <a href="{% url 'note_list' %}" class="btn btn-secondary">Back to Notes</a>
+    </div>
+  </div>
+{% endblock %}

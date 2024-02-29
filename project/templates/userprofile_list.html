@@ -1,0 +1,11 @@
+<!-- userprofile_list.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>User Profiles</h1>
+  <ul>
+    {% for userprofile in userprofiles %}
+      <li><a href="{% url 'userprofile_detail' userprofile.id %}">{{ userprofile.user.username }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}

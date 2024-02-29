@@ -1,10 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!-- task_list.html -->
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block title %}Task List{% endblock %}
+
+{% block content %}
+  <div class="container-fluid w-100">
+    <h1>Task List / Kanban Board</h1>
+
+    <!-- Kanban Board Sections -->
+    <div class="row">
+      {% for status, tasks in task_statuses.items %}
+        <div class="col-md-2">
+          <div class="card h-100">
+            <div class="card-header {% if status == 'To Do' %}bg-primary text-white{% elif status == 'In Progress' %}bg-info text-white{% elif status == 'Review' %}bg-warning text-white{% elif status == 'Testing' %}bg-secondary text-white{% elif status == 'Done' %}bg-success text-white{% endif %}">{{ status }}</div>
+            <div class="card-body d-flex flex-column">
+              {% for task in tasks %}
+                <div class="card mb-1">
+                  <div class="card-body">
+                    <!-- Priority Icon (Upper Right Corner) -->
+                    <div class="float-right text-danger">
+                      <i class="bi bi-exclamation-circle"></i> Critical
+                    </div>
+
+                    <h5 class="card-title">{{ task.title }}</h5>
+                    <p class="card-text">{{ task.description }}</p>
+
+                    <!-- XP Indicator (Lower Right Corner) -->
+                    <div class="text-success" style="position: absolute; bottom: 0; right: 0;">
+                      <i class="bi bi-lightbulb"></i> {{ task.xp_reward }} XP
+                    </div>
+
+                    <!-- Add other task details here -->
+                    <a href="{% url 'update_task' task.id %}" class="btn btn-sm btn-warning">Update</a>
+                    <a href="{% url 'delete_task' task.id %}" class="btn btn-sm btn-danger">Delete</a>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+
+            <!-- "Create Task" button for each column -->
+            <div class="mt-1">
+              <a href="{% url 'create_task' status %}" class="btn btn-primary">Create Task</a>
+
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
