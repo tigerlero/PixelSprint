@@ -24,7 +24,7 @@ class ProjectForm(forms.ModelForm):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'description', 'project', 'assigned_to', 'due_date', 'completed', 'xp_reward', 'priority', 'difficulty']
+        fields = ['title', 'description', 'project', 'assigned_to', 'due_date', 'priority', 'difficulty']
 
         widgets = {
             'due_date': forms.DateInput(attrs={'type': 'date'}),
@@ -32,15 +32,8 @@ class TaskForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        # Apply form-control class to all fields
         for field in self.fields:
             self.fields[field].widget.attrs.update({'class': 'form-control'})
-
-        # Add additional styling or attributes to specific fields
-        self.fields['xp_reward'].widget.attrs.update({'class': 'form-control', 'placeholder': 'XP Reward'})
-        self.fields['priority'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Priority'})
-
         # You can customize other fields in a similar manner if needed
 
 

@@ -1,9 +1,10 @@
+from django.db.models import Max, F
 from django.shortcuts import render
 
 # Create your views here.
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from .models import UserProfile, Project, Task, Note
 from .forms import ProjectForm, TaskForm, NoteForm, UserProfileForm
 from itertools import groupby
@@ -12,6 +13,42 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login
 from .models import Task
+
+from django.http import HttpResponseBadRequest
+
+
+def update_task_status(request, task_id, new_status, new_position):
+    task = Task.objects.get(pk=task_id)
+
+    if request.method == 'POST':
+        # Ensure the new_position is an integer
+        try:
+            new_position = int(new_position)
+        except ValueError:
+            return HttpResponseBadRequest('Invalid position value')
+
+        # Save the old position for comparison
+        old_position = task.position
+
+        # Update task status and position
+        task.status = new_status
+        task.position = new_position
+        task.save()
+
+        # Update positions of other tasks in the same status
+        if old_position < new_position:
+            # Moving down
+            Task.objects.filter(status=new_status, position__gt=old_position, position__lte=new_position).exclude(pk=task_id).update(position=F('position') - 1)
+        elif old_position > new_position:
+            # Moving up
+            Task.objects.filter(status=new_status, position__lt=old_position, position__gte=new_position).exclude(pk=task_id).update(position=F('position') + 1)
+
+        # Return a JSON response
+        return JsonResponse({'message': 'Task status and position updated successfully', 'status': new_status, 'position': new_position})
+
+    # Handle other HTTP methods if needed
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -146,13 +183,10 @@ def delete_project(request, project_id):
 # Task views
 def task_list(request):
     # Fetch tasks from the database and group them by status
-    tasks = Task.objects.all()
+    tasks = Task.objects.order_by('position', 'status').all()
     task_statuses = {}
     for status, _ in Task.STATUS_CHOICES:
         task_statuses[status] = tasks.filter(status=status)
-
-    # Add other context data as needed
-
     return render(request, 'task_list.html', {'task_statuses': task_statuses, 'form': TaskForm()})
 
 
@@ -161,6 +195,17 @@ def task_detail(request, task_id):
     return render(request, 'task_detail.html', {'task': task})
 
 
+def change_priority(request, task_id):
+    task = Task.objects.get(pk=task_id)
+
+    if request.method == 'POST':
+        new_priority = request.POST.get('priority')
+        print(f"Received new priority: {new_priority}")  # Add this line to check if data is received correctly
+        task.priority = new_priority
+        task.save()
+        print("Task priority updated successfully")  # Add this line to check if the task is saved successfully
+
+    return redirect('task_list')
 
 
 def create_task(request, status):
@@ -169,6 +214,13 @@ def create_task(request, status):
         if form.is_valid():
             task = form.save(commit=False)
             task.status = status
+
+            # Get the maximum position in the current status
+            max_position = Task.objects.filter(status=status).aggregate(Max('position'))['position__max']
+
+            # Set the new task's position to one greater than the maximum position
+            task.position = max_position + 1 if max_position is not None else 1
+
             task.save()
             return redirect('task_list')
     else:

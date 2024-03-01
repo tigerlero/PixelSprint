@@ -7,45 +7,104 @@
   <div class="container-fluid w-100">
     <h1>Task List / Kanban Board</h1>
 
-    <!-- Kanban Board Sections -->
-    <div class="row">
+    <div class="sortable-list row">
       {% for status, tasks in task_statuses.items %}
-        <div class="col-md-2">
-          <div class="card h-100">
-            <div class="card-header {% if status == 'To Do' %}bg-primary text-white{% elif status == 'In Progress' %}bg-info text-white{% elif status == 'Review' %}bg-warning text-white{% elif status == 'Testing' %}bg-secondary text-white{% elif status == 'Done' %}bg-success text-white{% endif %}">{{ status }}</div>
-            <div class="card-body d-flex flex-column">
-              {% for task in tasks %}
-                <div class="card mb-1">
-                  <div class="card-body">
-                    <!-- Priority Icon (Upper Right Corner) -->
-                    <div class="float-right text-danger">
-                      <i class="bi bi-exclamation-circle"></i> Critical
-                    </div>
-
-                    <h5 class="card-title">{{ task.title }}</h5>
-                    <p class="card-text">{{ task.description }}</p>
-
-                    <!-- XP Indicator (Lower Right Corner) -->
-                    <div class="text-success" style="position: absolute; bottom: 0; right: 0;">
-                      <i class="bi bi-lightbulb"></i> {{ task.xp_reward }} XP
-                    </div>
-
-                    <!-- Add other task details here -->
-                    <a href="{% url 'update_task' task.id %}" class="btn btn-sm btn-warning">Update</a>
-                    <a href="{% url 'delete_task' task.id %}" class="btn btn-sm btn-danger">Delete</a>
-                  </div>
-                </div>
-              {% endfor %}
+        <div class=" col-md-2">
+          <div class=" card h-100">
+            <div class="card-header {% if status == 'To Do' %}bg-primary text-white{% elif status == 'In Progress' %}bg-info text-white{% elif status == 'Review' %}bg-warning text-white{% elif status == 'Testing' %}bg-secondary text-white{% elif status == 'Done' %}bg-success text-white{% endif %}">
+              {{ status }}
             </div>
 
-            <!-- "Create Task" button for each column -->
-            <div class="mt-1">
-              <a href="{% url 'create_task' status %}" class="btn btn-primary">Create Task</a>
+            <div id="{{ status }}-column" class="card-body d-flex flex-column sortable-list" data-status="{{ status }}">
 
+                {% for task in tasks %}
+                  <div class="card mb-1" data-task-id="{{ task.id }}">
+                    <div class="card-body">
+                      <div class="float-right" data-bs-placement="top" title="{% if task.priority == 'Critical' %}Critical{% elif task.priority == 'High' %}High{% elif task.priority == 'Medium' %}Medium{% elif task.priority == 'Low' %}Low{% endif %}">
+                        <i class="bi {% if task.priority == 'Critical' %}bi-reception-4 text-danger{% elif task.priority == 'High' %}bi-reception-3 text-warning{% elif task.priority == 'Medium' %}bi-reception-2 text-info{% elif task.priority == 'Low' %}bi-reception-1 text-success{% endif %}" data-bs-toggle="modal" data-bs-target="#changePriorityModal{{ task.id }}"></i>
+                      </div>
+
+                      <h5 class="card-title">{{ task.title }}</h5>
+                      <p class="card-text">{{ task.description }}</p>
+
+                      <div class="text-success" style="position: absolute; bottom: 0; right: 0;">
+                        <i class="bi bi-controller"></i> {{ task.xp_reward }} XP
+                      </div>
+
+                      <a href="{% url 'update_task' task.id %}" class="btn btn-sm btn-warning">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                      <a href="{% url 'delete_task' task.id %}" class="btn btn-sm btn-danger">
+                        <i class="bi bi-trash"></i>
+                      </a>
+                    </div>
+                  </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-1">
+              <a href="{% url 'create_task' status %}" class="btn btn-primary">
+                <i class="bi bi-plus"></i>
+              </a>
             </div>
           </div>
         </div>
       {% endfor %}
     </div>
   </div>
+
+  <!-- Include Sortable script -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var statuses = ['To Do', 'In Progress', 'Review', 'Testing', 'Done'];
+
+    statuses.forEach(function (status) {
+      var container = document.querySelector(`.sortable-list[data-status="${status}"]`);
+      console.log('Container:', container);  // Log container for debugging
+
+      new Sortable(container, {
+        group: {
+          name: 'shared',
+        },
+        animation: 150,
+        ghostClass: 'blue-background-class',
+        filter: ".htmx-indicator",
+        onEnd: function (evt) {
+          // Get the task ID and the new status
+          var taskId = evt.item.dataset.taskId;
+          var newStatus = evt.to.dataset.status;
+
+          // Get the index of the dragged item within the column
+          var newPosition = Array.from(evt.to.children).indexOf(evt.item) + 1;  // Add +1 to start position from 1
+
+          // Send a request to update the task status and position on the server
+          updateTaskStatus(taskId, newStatus, newPosition);
+        }
+      });
+    });
+
+    // AJAX function to update task status and position
+    function updateTaskStatus(taskId, newStatus, newPosition) {
+      fetch(`/update_task_status/${taskId}/${newStatus}/${newPosition}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Task status and position updated successfully:', data);
+          // Handle success, if needed
+        })
+        .catch(error => {
+          console.error('Error updating task status and position:', error);
+          // Handle errors
+        });
+    }
+  });
+</script>
+
 {% endblock %}

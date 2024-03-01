@@ -1,0 +1,18 @@
+<!-- change_priority_modal.html -->
+<form method="post" action="{% url 'change_priority' task.id %}" hx-post="true" hx-target=".card-body">
+    {% csrf_token %}
+    <select id="prioritySelect{{ task.id }}" name="priority" class="form-select" hx-trigger="change" hx-target=".card-body">
+        <option value="Critical" {% if task.priority == 'Critical' %} selected {% endif %}>
+            <span class="bi bi-exclamation-diamond-fill text-danger"></span>
+        </option>
+        <option value="High" {% if task.priority == 'High' %} selected {% endif %}>
+            <i class="bi bi-arrow-up-circle-fill text-warning"></i>
+        </option>
+        <option value="Medium" {% if task.priority == 'Medium' %} selected {% endif %}>
+            <i class="bi bi-arrow-right-circle-fill text-info"></i>
+        </option>
+        <option value="Low" {% if task.priority == 'Low' %} selected {% endif %}>
+            <i class="bi bi-arrow-down-circle-fill text-success"></i>
+        </option>
+    </select>
+</form>

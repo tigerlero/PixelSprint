@@ -36,6 +36,8 @@ class Project(models.Model):
         return self.title
 
 
+from django.db import models
+
 class Task(models.Model):
     STATUS_CHOICES = [
         ('To Do', 'To Do'),
@@ -50,12 +52,12 @@ class Task(models.Model):
         choices=STATUS_CHOICES,
         default='To Do'
     )
+    position = models.PositiveIntegerField(default=0)
     title = models.CharField(max_length=255)
     description = models.TextField()
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
     assigned_to = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assigned_tasks')
     due_date = models.DateField()
-    completed = models.BooleanField(default=False)
     xp_reward = models.PositiveIntegerField(default=1)
     priority = models.CharField(
         max_length=20,
@@ -79,8 +81,33 @@ class Task(models.Model):
         default='Medium'
     )
 
+    def save(self, *args, **kwargs):
+        # Calculate xp_reward based on priority and difficulty
+        priority_multiplier = {
+            'Critical': 3,
+            'High': 2,
+            'Medium': 1,
+            'Low': 1,  # You can adjust this as needed
+        }
+
+        difficulty_multiplier = {
+            'Easy': 1,   # You can adjust this as needed
+            'Medium': 1,
+            'Hard': 2,
+            'Very Hard': 3,
+            'Extreme': 4,
+        }
+
+        xp_reward = int(priority_multiplier.get(self.priority, 1) * difficulty_multiplier.get(self.difficulty, 1))
+
+        # Set calculated xp_reward before saving
+        self.xp_reward = xp_reward
+
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.title
+
 
 
 class Note(models.Model):

@@ -2,7 +2,6 @@
 
 from django.urls import path
 from . import views
-from .views import create_or_update_project, create_task
 from .views import register_view
 from django.contrib.auth import views as auth_views
 from .views import login_view
@@ -14,14 +13,15 @@ urlpatterns = [
     path('', views.homepage, name='homepage'),
     path('projects/', views.project_list, name='project_list'),
     path('projects/<int:project_id>/', views.project_detail, name='project_detail'),
-    path('projects/create/', create_or_update_project, name='create_project'),
-    path('projects/update/<int:project_id>/', create_or_update_project, name='update_project'),
+    path('projects/create/', views.create_or_update_project, name='create_project'),
+    path('projects/update/<int:project_id>/', views.create_or_update_project, name='update_project'),
     path('projects/delete/<int:project_id>/', views.delete_project, name='delete_project'),
     path('register/', register_view, name='register'),
-
+    path('change_priority/<int:task_id>/', views.change_priority, name='change_priority'),
     path('tasks/', views.task_list, name='task_list'),
-    path('tasks/<int:task_id>/', views.task_detail, name='task_detail'),
-    path('create_task/<str:status>/', create_task, name='create_task'),
+    path('task_detail/<int:task_id>/', views.task_detail, name='task_detail'),
+    path('update_task_status/<int:task_id>/<str:new_status>/<int:new_position>/', views.update_task_status, name='update_task_status'),
+    path('create_task/<str:status>/', views.create_task, name='create_task'),
     path('tasks/update/<int:task_id>/', views.update_task, name='update_task'),
     path('tasks/delete/<int:task_id>/', views.delete_task, name='delete_task'),
 
