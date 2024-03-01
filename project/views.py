@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db.models import Max, F
 from django.shortcuts import render
 
@@ -16,6 +17,8 @@ from .models import Task
 
 from django.http import HttpResponseBadRequest
 
+# for user in User.objects.all():
+#         UserProfile.objects.get_or_create(user=user)
 
 def update_task_status(request, task_id, new_status, new_position):
     task = Task.objects.get(pk=task_id)
