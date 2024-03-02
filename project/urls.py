@@ -20,10 +20,11 @@ urlpatterns = [
     path('change_priority/<int:task_id>/', views.change_priority, name='change_priority'),
     path('tasks/<int:project_id>/', views.task_list, name='task_list'),
     path('tasks/', views.task_list, name='task_list'),
-    path('update_task_status/<int:task_id>/<str:new_status>/<int:new_position>/', views.update_task_status, name='update_task_status'),
-    path('create_task/<str:status>/', views.create_task, name='create_task'),
+    path('update_task_status/<int:task_id>/<str:newstatus>/<int:new_position>/', views.update_task_status, name='update_task_status'),
+    path('create_task/<str:status_name>/', views.create_task, name='create_task'),
     path('tasks/update/<int:task_id>/', views.update_task, name='update_task'),
     path('tasks/delete/<int:task_id>/', views.delete_task, name='delete_task'),
+    path('task_detail/<int:task_id>/', views.task_detail, name='task_detail'),
 
     path('notes/', views.note_list, name='note_list'),
     path('notes/<int:note_id>/', views.note_detail, name='note_detail'),

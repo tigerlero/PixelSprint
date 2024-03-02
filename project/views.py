@@ -6,7 +6,7 @@ import hashlib
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
-from .models import UserProfile, Project, Task, Note
+from .models import UserProfile, Project, Task, Note, Status
 from .forms import ProjectForm, TaskForm, NoteForm, UserProfileForm
 from itertools import groupby
 from django.contrib.auth.forms import UserCreationForm
@@ -46,10 +46,11 @@ def logout_view(request):
     logout(request)
     return redirect('/')  # Change this to the URL where you want to redirect after logout
 
+
 # for user in User.objects.all():
 #         UserProfile.objects.get_or_create(user=user)
 
-def update_task_status(request, task_id, new_status, new_position):
+def update_task_status(request, task_id, newstatus, new_position):
     task = Task.objects.get(pk=task_id)
 
     if request.method == 'POST':
@@ -59,30 +60,43 @@ def update_task_status(request, task_id, new_status, new_position):
         except ValueError:
             return HttpResponseBadRequest('Invalid position value')
 
+        # Retrieve the Status instance based on the name
+        status = Status.objects.get(name=newstatus)
+
         # Save the old position for comparison
         old_position = task.position
+        old_status = task.status
 
         # Update task status and position
-        task.status = new_status
+        task.status = status
         task.position = new_position
         task.save()
 
-        # Update positions of other tasks in the same status
-        if old_position < new_position:
-            # Moving down
-            Task.objects.filter(status=new_status, position__gt=old_position, position__lte=new_position).exclude(
-                pk=task_id).update(position=F('position') - 1)
-        elif old_position > new_position:
-            # Moving up
-            Task.objects.filter(status=new_status, position__lt=old_position, position__gte=new_position).exclude(
-                pk=task_id).update(position=F('position') + 1)
+        # Moving within the same column (Up/Down)
+        if old_status == status:
+            if old_position < new_position:
+                Task.objects.filter(status=status, position__gt=old_position, position__lte=new_position).exclude(
+                    pk=task_id).update(position=F('position') - 1)
+            elif old_position > new_position:
+                Task.objects.filter(status=status, position__lt=old_position, position__gte=new_position).exclude(
+                    pk=task_id).update(position=F('position') + 1)
+
+        # Moving between columns
+        else:
+            # Update positions of tasks in the new column
+            Task.objects.filter(status=status, position__gte=new_position).exclude(pk=task_id).update(position=F('position') + 1)
+
+            # Adjust positions of tasks in the old column
+            Task.objects.filter(status=old_status, position__gt=old_position).exclude(pk=task_id).update(position=F('position') - 1)
 
         # Return a JSON response
-        return JsonResponse({'message': 'Task status and position updated successfully', 'status': new_status,
+        return JsonResponse({'message': 'Task status and position updated successfully', 'status': newstatus,
                              'position': new_position})
 
     # Handle other HTTP methods if needed
     return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+    # Handle other HTTP methods if needed
 
 
 def login_view(request):
@@ -222,21 +236,35 @@ def task_list(request, project_id=None):
     if project_id:
         project = get_object_or_404(Project, id=project_id)
         tasks = Task.objects.filter(project=project).order_by('position', 'status').all()
+        project_statuses = project.status.all()
     else:
         tasks = Task.objects.order_by('position', 'status').all()
+        project_statuses = Status.objects.all()  # Fetch all statuses
 
     # Group tasks by status
     task_statuses = {}
-    for status, _ in Task.STATUS_CHOICES:
-        task_statuses[status] = tasks.filter(status=status)
+    for task in tasks:
+        status_name = task.status.name
+        if status_name not in task_statuses:
+            task_statuses[status_name] = []
+        task_statuses[status_name].append({
+            'id': task.id,
+            'title': task.title,
+            'description': task.description,
+            'priority': task.priority,
+            'xp_reward': task.xp_reward,
+        })
 
     # Include profile picture information in the context
     user_profile_picture = request.user.userprofile.profile_picture if hasattr(request.user, 'userprofile') else None
-
+    print(task_statuses)
+    print(project_statuses)
     return render(request, 'task_list.html', {
         'task_statuses': task_statuses,
         'form': TaskForm(),
+        'tasks': tasks,
         'user_profile_picture': user_profile_picture,
+        'project_statuses': project_statuses,
     })
 
 
@@ -258,7 +286,10 @@ def change_priority(request, task_id):
     return redirect('task_list')
 
 
-def create_task(request, status):
+def create_task(request, status_name):
+    # Get the Status instance based on the provided status name
+    status = get_object_or_404(Status, name=status_name)
+
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():

@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db import models
 
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     xp = models.PositiveIntegerField(default=0)
@@ -13,6 +14,13 @@ class UserProfile(models.Model):
         return self.user.username
 
 
+class Status(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    color = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"{self.name} - {self.color}"
+
 class Project(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -20,33 +28,13 @@ class Project(models.Model):
     end_date = models.DateField()
     team = models.ManyToManyField(User, related_name='projects')
     xp_reward = models.PositiveIntegerField(default=2)
-    status = models.CharField(
-        max_length=20,
-        choices=[
-            ('Backlog', 'Backlog'),
-            ('Sprint Planning', 'Sprint Planning'),
-            ('In Progress', 'In Progress'),
-            ('Code Review', 'Code Review'),
-            ('Testing', 'Testing'),
-            ('Done', 'Done'),
-        ],
-        default='Backlog'
-    )
+    status = models.ManyToManyField(Status, related_name='projects')
 
     def __str__(self):
         return self.title
 
 
-class Status(models.Model):
-    name = models.CharField(max_length=50)
-    color = models.CharField(max_length=20)
-
-    def __str__(self):
-        return self.name
-
 class Task(models.Model):
-    status = models.ForeignKey(Status, on_delete=models.CASCADE)
-    position = models.PositiveIntegerField(default=0)
     title = models.CharField(max_length=255)
     description = models.TextField()
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
@@ -74,6 +62,8 @@ class Task(models.Model):
         ],
         default='Medium'
     )
+    position = models.PositiveIntegerField(default=0)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE, related_name='tasks', default=1)
 
     def save(self, *args, **kwargs):
         # Calculate xp_reward based on priority and difficulty
@@ -101,7 +91,6 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
-
 
 
 class Note(models.Model):
