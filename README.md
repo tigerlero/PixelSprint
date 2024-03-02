@@ -15,7 +15,7 @@ PixelSprint is a Django project for managing tasks and projects.
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/your-username/pixelsprint.git
+    git clone https://github.com/tigerlero/pixelsprint.git
     ```
 
 2. Install dependencies:
