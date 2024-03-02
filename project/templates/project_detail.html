@@ -11,6 +11,9 @@
       <a href="{% url 'update_project' project.id %}" class="btn btn-primary">Update Project</a>
       <a href="{% url 'delete_project' project.id %}" class="btn btn-danger">Delete Project</a>
       <a href="{% url 'project_list' %}" class="btn btn-secondary">Back to Projects</a>
+
+      <!-- Button for viewing tasks related to this project with a filter -->
+      <a href="{% url 'task_list' project.id %}" class="btn btn-info">View Project Tasks</a>
     </div>
   </div>
 {% endblock %}

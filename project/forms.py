@@ -24,7 +24,7 @@ class ProjectForm(forms.ModelForm):
 class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'description', 'project', 'assigned_to', 'due_date', 'priority', 'difficulty']
+        fields = ['title', 'description', 'project', 'assigned_to', 'due_date', 'priority', 'difficulty', 'status']
 
         widgets = {
             'due_date': forms.DateInput(attrs={'type': 'date'}),
@@ -51,14 +51,14 @@ class NoteForm(forms.ModelForm):
         }
 
 
-
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['user', 'xp']
+        fields = ['profile_picture']  # Exclude 'user' from fields
 
     def __init__(self, *args, **kwargs):
         super(UserProfileForm, self).__init__(*args, **kwargs)
         # You can customize the form fields if needed
-        self.fields['user'].widget = forms.HiddenInput()
-        self.fields['user'].required = False
+        self.fields['profile_picture'].widget = forms.ClearableFileInput(attrs={'class': 'form-control'})
+        self.fields['profile_picture'].label = 'Profile Picture'
+        self.fields['profile_picture'].required = False

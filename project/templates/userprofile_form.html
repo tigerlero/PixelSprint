@@ -4,23 +4,13 @@
 {% block content %}
   <div class="container mt-5">
     <h1>Create/Update User Profile</h1>
-    <form method="post" action="">
+    <form method="post" action="" enctype="multipart/form-data">
       {% csrf_token %}
-      <div class="form-group">
-        <label for="{{ form.user.username.id_for_label }}">Username:</label>
-        {{ form.user.username }}
-        {% if form.user.username.errors %}
-          <small class="text-danger">{{ form.user.username.errors }}</small>
-        {% endif %}
-      </div>
-      <div class="form-group">
-        <label for="{{ form.xp.id_for_label }}">XP:</label>
-        {{ form.xp }}
-        {% if form.xp.errors %}
-          <small class="text-danger">{{ form.xp.errors }}</small>
-        {% endif %}
-      </div>
+
+      {{ form.as_p }}
+
       <button type="submit" class="btn btn-primary">Save</button>
     </form>
+    <a href="{% url 'userprofile_list' %}" class="btn btn-secondary mt-3">Back to User Profiles</a>
   </div>
 {% endblock %}

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models import Max, F
 from django.shortcuts import render
-
+import hashlib
 # Create your views here.
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
@@ -14,8 +14,37 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import login
 from .models import Task
+from django.contrib.auth import logout
 
 from django.http import HttpResponseBadRequest
+from django.contrib.auth.decorators import login_required
+from .forms import UserProfileForm  # Import your UserProfileForm
+
+
+def gravatar_url(username, size=40):
+    default = "https://example.com/default.jpg"  # URL of your default image
+    username_hash = hashlib.md5(username.lower().encode()).hexdigest()
+    return f"https://www.gravatar.com/avatar/{username_hash}?d={default}&s={size}"
+
+
+@login_required
+def user_profile_form_view(request):
+    user_profile = request.user.userprofile
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
+        if form.is_valid():
+            form.save()
+            return redirect('user_profile_form')
+    else:
+        form = UserProfileForm(instance=user_profile)
+
+    return render(request, 'userprofile_form.html', {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('/')  # Change this to the URL where you want to redirect after logout
 
 # for user in User.objects.all():
 #         UserProfile.objects.get_or_create(user=user)
@@ -41,13 +70,16 @@ def update_task_status(request, task_id, new_status, new_position):
         # Update positions of other tasks in the same status
         if old_position < new_position:
             # Moving down
-            Task.objects.filter(status=new_status, position__gt=old_position, position__lte=new_position).exclude(pk=task_id).update(position=F('position') - 1)
+            Task.objects.filter(status=new_status, position__gt=old_position, position__lte=new_position).exclude(
+                pk=task_id).update(position=F('position') - 1)
         elif old_position > new_position:
             # Moving up
-            Task.objects.filter(status=new_status, position__lt=old_position, position__gte=new_position).exclude(pk=task_id).update(position=F('position') + 1)
+            Task.objects.filter(status=new_status, position__lt=old_position, position__gte=new_position).exclude(
+                pk=task_id).update(position=F('position') + 1)
 
         # Return a JSON response
-        return JsonResponse({'message': 'Task status and position updated successfully', 'status': new_status, 'position': new_position})
+        return JsonResponse({'message': 'Task status and position updated successfully', 'status': new_status,
+                             'position': new_position})
 
     # Handle other HTTP methods if needed
     return JsonResponse({'error': 'Invalid request method'}, status=400)
@@ -184,13 +216,28 @@ def delete_project(request, project_id):
 
 
 # Task views
-def task_list(request):
-    # Fetch tasks from the database and group them by status
-    tasks = Task.objects.order_by('position', 'status').all()
+@login_required
+def task_list(request, project_id=None):
+    # Fetch tasks based on project_id if provided, otherwise fetch all tasks
+    if project_id:
+        project = get_object_or_404(Project, id=project_id)
+        tasks = Task.objects.filter(project=project).order_by('position', 'status').all()
+    else:
+        tasks = Task.objects.order_by('position', 'status').all()
+
+    # Group tasks by status
     task_statuses = {}
     for status, _ in Task.STATUS_CHOICES:
         task_statuses[status] = tasks.filter(status=status)
-    return render(request, 'task_list.html', {'task_statuses': task_statuses, 'form': TaskForm()})
+
+    # Include profile picture information in the context
+    user_profile_picture = request.user.userprofile.profile_picture if hasattr(request.user, 'userprofile') else None
+
+    return render(request, 'task_list.html', {
+        'task_statuses': task_statuses,
+        'form': TaskForm(),
+        'user_profile_picture': user_profile_picture,
+    })
 
 
 def task_detail(request, task_id):
@@ -257,8 +304,6 @@ def delete_task(request, task_id):
 
 
 # Note views
-
-
 def note_list(request):
     # Assuming you have a queryset of Note objects
     notes = Note.objects.all().order_by('assigned_to', 'project')

@@ -26,11 +26,20 @@ SECRET_KEY = "django-insecure-t^)70p8%o^7#_myl48rdi9ok@7*5q08f*@c+el)r14d&m-cj2&
 DEBUG = True
 
 ALLOWED_HOSTS = []
+# Add these lines at the end of your settings.py file
 
+# Media settings
+MEDIA_ROOT = BASE_DIR / ''
+MEDIA_URL = ''
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.0/howto/static-files/
+STATIC_URL = ''
 
 # Application definition
 
 INSTALLED_APPS = [
+    'django_gravatar',
     "django.contrib.admin",
     'project',
     "django.contrib.auth",

@@ -1,6 +1,6 @@
 <!-- task_list.html -->
 {% extends 'base.html' %}
-
+{% load gravatar %}
 {% block title %}Task List{% endblock %}
 
 {% block content %}
@@ -20,6 +20,18 @@
                 {% for task in tasks %}
                   <div class="card mb-1" data-task-id="{{ task.id }}">
                     <div class="card-body">
+                        <div class="float-right">
+                            <!-- Inside your template, for example, task_list.html -->
+{% load gravatar %}
+
+<!-- Display profile picture -->
+{% if user_profile_picture %}
+  <img src="{{ user_profile_picture.url }}" alt="{{ request.user.username }}" class="rounded-circle" width="30" height="30" style="cursor: pointer;" onclick="window.location.href='{% url 'user_profile_form' %}'">
+{% else %}
+  <!-- You can use Gravatar if no profile picture is available -->
+  <img src="{% gravatar request.user.email %}" alt="{{ request.user.username }}" class="img-fluid mb-2">
+{% endif %}
+                        </div>
                       <div class="float-right" data-bs-placement="top" title="{% if task.priority == 'Critical' %}Critical{% elif task.priority == 'High' %}High{% elif task.priority == 'Medium' %}Medium{% elif task.priority == 'Low' %}Low{% endif %}">
                         <i class="bi {% if task.priority == 'Critical' %}bi-reception-4 text-danger{% elif task.priority == 'High' %}bi-reception-3 text-warning{% elif task.priority == 'Medium' %}bi-reception-2 text-info{% elif task.priority == 'Low' %}bi-reception-1 text-success{% endif %}" data-bs-toggle="modal" data-bs-target="#changePriorityModal{{ task.id }}"></i>
                       </div>
