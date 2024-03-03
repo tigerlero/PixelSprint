@@ -15,17 +15,16 @@
             </div>
 
             <div id="{{ project_status.name }}-column" class="card-body d-flex flex-column sortable-list" data-status="{{ project_status.name }}">
-              {% for task in tasks %}y
+              {% for task in tasks %}
                 {% if task.status.name == project_status.name %}
-{#                  <script>console.log({{ task }})</script>#}
                   <div class="card mb-1" data-task-id="{{ task.id }}">
                     <div class="card-body">
                       <div class="float-right">
                         {% if task.assigned_to.profile_picture %}
-    <img src="{{ task.assigned_to.profile_picture.url }}" alt="{{ task.assigned_to }}" class="rounded-circle" width="30" height="30" style="cursor: pointer;" onclick="window.location.href='{% url 'user_profile_form' %}'">
-{% else %}
-    <div class="custom-avatar" style="background-color: {{ task.assigned_to.color }};">
-                        {{ task.assigned_to|slice:":2"|lower }}
+                            <img src="{{ task.assigned_to.profile_picture.url }}" alt="{{ task.assigned_to }}" class="rounded-circle" width="30" height="30" style="cursor: pointer;" onclick="window.location.href='{% url 'user_profile_form' %}'">
+                        {% else %}
+                            <div class="custom-avatar" style="background-color: {{ task.assigned_to.color }};">
+                                {{ task.assigned_to|slice:":2"|lower }}
                             </div>
                         {% endif %}
                       </div>
