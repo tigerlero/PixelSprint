@@ -24,7 +24,7 @@
           <div class="card-body">
             <h5 class="card-title">Get Started</h5>
             <p class="card-text">Ready to boost your productivity? Start using Your App today!</p>
-            <a href="{% url 'project_list' %}" class="btn btn-primary">Explore Projects</a>
+            {% if user.is_authenticated %}<a href="{% url 'project_list' %}" class="btn btn-primary">Explore Projects</a>{% endif %}
           </div>
         </div>
       </div>

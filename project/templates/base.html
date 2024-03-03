@@ -19,6 +19,8 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
+                 <!-- Display links only if the user is authenticated -->
+            {% if user.is_authenticated %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'project_list' %}">Projects</a>
                 </li>
@@ -31,6 +33,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'userprofile_list' %}">User Profiles</a>
                 </li>
+            {% endif %}
             </ul>
             <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
