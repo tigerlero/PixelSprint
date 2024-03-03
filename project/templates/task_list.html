@@ -1,6 +1,5 @@
-<!-- task_list.html -->
 {% extends 'base.html' %}
-{% load gravatar %}
+<!-- task_list.html -->
 {% block title %}Task List{% endblock %}
 
 {% block content %}
@@ -16,18 +15,18 @@
             </div>
 
             <div id="{{ project_status.name }}-column" class="card-body d-flex flex-column sortable-list" data-status="{{ project_status.name }}">
-              {% for task in tasks %}
+              {% for task in tasks %}y
                 {% if task.status.name == project_status.name %}
 {#                  <script>console.log({{ task }})</script>#}
                   <div class="card mb-1" data-task-id="{{ task.id }}">
                     <div class="card-body">
                       <div class="float-right">
-                        <!-- Inside your template, for example, task_list.html -->
-                        {% if user_profile_picture %}
-                          <img src="{{ user_profile_picture.url }}" alt="{{ request.user.username }}" class="rounded-circle" width="30" height="30" style="cursor: pointer;" onclick="window.location.href='{% url 'user_profile_form' %}'">
-                        {% else %}
-                          <!-- You can use Gravatar if no profile picture is available -->
-                          <img src="{% gravatar request.user.email %}" alt="{{ request.user.username }}" class="img-fluid mb-2">
+                        {% if task.assigned_to.profile_picture %}
+    <img src="{{ task.assigned_to.profile_picture.url }}" alt="{{ task.assigned_to }}" class="rounded-circle" width="30" height="30" style="cursor: pointer;" onclick="window.location.href='{% url 'user_profile_form' %}'">
+{% else %}
+    <div class="custom-avatar" style="background-color: {{ task.assigned_to.color }};">
+                        {{ task.assigned_to|slice:":2"|lower }}
+                            </div>
                         {% endif %}
                       </div>
                       <div class="float-right" data-bs-placement="top" title="{% if task.priority == 'Critical' %}Critical{% elif task.priority == 'High' %}High{% elif task.priority == 'Medium' %}Medium{% elif task.priority == 'Low' %}Low{% endif %}">
@@ -119,5 +118,16 @@
       });
   }
 </script>
-
+<style>
+    .custom-avatar {
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        border-radius: 50%;
+        color: white;  /* Text color */
+        font-size: 12px;  /* Adjust font size as needed */
+        font-weight: bold;
+    }
+</style>
 {% endblock %}

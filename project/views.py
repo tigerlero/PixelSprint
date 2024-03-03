@@ -21,12 +21,6 @@ from django.contrib.auth.decorators import login_required
 from .forms import UserProfileForm  # Import your UserProfileForm
 
 
-def gravatar_url(username, size=40):
-    default = "https://example.com/default.jpg"  # URL of your default image
-    username_hash = hashlib.md5(username.lower().encode()).hexdigest()
-    return f"https://www.gravatar.com/avatar/{username_hash}?d={default}&s={size}"
-
-
 @login_required
 def user_profile_form_view(request):
     user_profile = request.user.userprofile
@@ -47,8 +41,8 @@ def logout_view(request):
     return redirect('/')  # Change this to the URL where you want to redirect after logout
 
 
-# for user in User.objects.all():
-#         UserProfile.objects.get_or_create(user=user)
+for user in User.objects.all():
+        UserProfile.objects.get_or_create(user=user)
 
 def update_task_status(request, task_id, newstatus, new_position):
     task = Task.objects.get(pk=task_id)

@@ -1,17 +1,42 @@
 # models.py
-
-from django.db import models
+import random
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
 
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     xp = models.PositiveIntegerField(default=0)
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
+    color = models.CharField(max_length=7, default='#00ff00')  # Default color is green
+
+    def generate_random_dark_color(self):
+        # Generate a random hex color in the dark color range
+        dark_color_range = list(range(0, 128))  # Adjust the range as needed
+        random_color = "#{:02x}{:02x}{:02x}".format(
+            random.choice(dark_color_range),
+            random.choice(dark_color_range),
+            random.choice(dark_color_range)
+        )
+        return random_color
+
+    def save(self, *args, **kwargs):
+        # Set a darker random color only when creating a new user
+        if self.color == "#00ff00":
+            self.color = self.generate_random_dark_color()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.user.username
+
+    def save_user_profile(sender, instance, created, **kwargs):
+        if created:
+            UserProfile.objects.create(user=instance)
+
+    # Connect the save_user_profile method to the post_save signal of User model
+    post_save.connect(save_user_profile, sender=User)
+    # Override the save method in User model
 
 
 class Status(models.Model):
@@ -20,6 +45,7 @@ class Status(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.color}"
+
 
 class Project(models.Model):
     title = models.CharField(max_length=255)
@@ -75,7 +101,7 @@ class Task(models.Model):
         }
 
         difficulty_multiplier = {
-            'Easy': 1,   # You can adjust this as needed
+            'Easy': 1,  # You can adjust this as needed
             'Medium': 2,
             'Hard': 3,
             'Very Hard': 4,

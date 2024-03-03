@@ -39,7 +39,6 @@ STATIC_URL = ''
 # Application definition
 
 INSTALLED_APPS = [
-    'django_gravatar',
     "django.contrib.admin",
     'project',
     "django.contrib.auth",
@@ -121,6 +120,7 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 
 USE_TZ = True
+
 
 
 # Static files (CSS, JavaScript, Images)
