@@ -21,18 +21,14 @@ class UserProfile(models.Model):
         )
         return random_color
 
-    def save(self, *args, **kwargs):
-        # Set a darker random color only when creating a new user
-        if self.color == "#00ff00":
-            self.color = self.generate_random_dark_color()
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return self.user.username
 
     def save_user_profile(sender, instance, created, **kwargs):
         if created:
-            UserProfile.objects.create(user=instance)
+            profile = UserProfile.objects.create(user=instance)
+            profile.color = profile.generate_random_dark_color()
+            profile.save()
 
     # Connect the save_user_profile method to the post_save signal of User model
     post_save.connect(save_user_profile, sender=User)
