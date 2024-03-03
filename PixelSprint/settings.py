@@ -27,17 +27,17 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', "127.0.0.1", 'pixelsprint.onrender.com']
 # CORS_ALLOWED_ORIGINS = [
-#     'localhost', 
+#     'localhost',
 #     "127.0.0.1",
-#     "https://ur8.onrender.com",
+#     "https://pixelsprint.onrender.com",
 #     # Add other allowed origins here if needed
 # ]
 # CORS_ORIGIN_ALLOW_ALL = True
 # CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = ['http://localhost', "http://127.0.0.1", 'https://pixelsprint.onrender.com', 'https://pixelsprint.onrender.com/*/', 'https://pixelsprint.onrender.com/sign-up/', 'https://pixelsprint.onrender.com/sign-in/']
+CSRF_TRUSTED_ORIGINS = ['http://localhost',"http://127.0.0.1",  "http://127.0.0.1:8000", "http://127.0.0.1:8000/*/", 'https://pixelsprint.onrender.com', 'https://pixelsprint.onrender.com/*/', 'https://pixelsprint.onrender.com/sign-up/', 'https://pixelsprint.onrender.com/sign-in/']
 
-CSRF_COOKIE_DOMAIN = ['http://localhost', "http://127.0.0.1", 'https://pixelsprint.onrender.com', 'https://pixelsprint.onrender.com/*/', 'https://pixelsprint.onrender.com/sign-up/', 'https://pixelsprint.onrender.com/sign-in/']
-CSRF_COOKIE_PATH = ['http://localhost', "http://127.0.0.1", 'https://pixelsprint.onrender.com', 'https://pixelsprint.onrender.com/*/', 'https://pixelsprint.onrender.com/sign-up/', 'https://pixelsprint.onrender.com/sign-in/']
+CSRF_COOKIE_DOMAIN = ['http://localhost',  "http://127.0.0.1",  "http://127.0.0.1:8000","http://127.0.0.1:8000/*/", 'https://pixelsprint.onrender.com', 'https://pixelsprint.onrender.com/*/', 'https://pixelsprint.onrender.com/sign-up/', 'https://pixelsprint.onrender.com/sign-in/']
+CSRF_COOKIE_PATH = ['http://localhost', "http://127.0.0.1",  "http://127.0.0.1:8000","http://127.0.0.1:8000/*/",  'https://pixelsprint.onrender.com', 'https://pixelsprint.onrender.com/*/', 'https://pixelsprint.onrender.com/sign-up/', 'https://pixelsprint.onrender.com/sign-in/']
 
 # Add these lines at the end of your settings.py file
 
