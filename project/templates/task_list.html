@@ -37,7 +37,7 @@
                             <img src="{{ task.assigned_to.profile_picture.url }}" alt="{{ task.assigned_to }}" class="rounded-circle" width="30" height="30" style="cursor: pointer;" onclick="window.location.href='{% url 'userprofile_detail' task.assigned_to.id %}'">
                         {% else %}
                             <div class="custom-avatar" style="background-color: {{ task.assigned_to.color }};" onclick="window.location.href='{% url 'userprofile_detail' task.assigned_to.id %}'">
-                                {{ task.assigned_to|slice:":2"|lower }}
+                                {{ task.assigned_to|slice:"2:" }}
                             </div>
                         {% endif %}
                     </div>
