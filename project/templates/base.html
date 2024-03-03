@@ -34,9 +34,7 @@
             </ul>
             <ul class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-                    </li>
+
                     <li class="nav-item">
     <span class="navbar-text">
                 {% if user.userprofile.profile_picture %}
@@ -44,8 +42,13 @@
                         <img src="{{ user.userprofile.profile_picture.url }}" alt="{{ user.username }}" class="rounded-circle" width="30" height="30" style="cursor: pointer;" onclick="window.location.href='{% url 'user_profile_form' %}'">
                     </a>
                 {% else %}
-                    Welcome, {{ user.username }}
+                    <div class="custom-avatar" style="background-color: {{ user.userprofile.color }};" onclick="window.location.href='{% url 'userprofile_detail' user.userprofile.id %}'">
+                                {{ user.username|slice:":4:" }}
+                            </div>
                 {% endif %}
+                <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                    </li>
             </span>
 </li>
                 {% else %}
@@ -69,6 +72,18 @@
      <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+<style>
+    .custom-avatar {
+        width: 30px;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        border-radius: 50%;
+        color: white;  /* Text color */
+        font-size: 12px;  /* Adjust font size as needed */
+        font-weight: bold;
+        cursor: pointer;  /* Set the cursor style to pointer */
+    }
+</style>
 </body>
 </html>
