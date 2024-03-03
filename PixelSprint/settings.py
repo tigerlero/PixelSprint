@@ -25,7 +25,20 @@ SECRET_KEY = "django-insecure-t^)70p8%o^7#_myl48rdi9ok@7*5q08f*@c+el)r14d&m-cj2&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', "127.0.0.1", 'pixelsprint.onrender.com']
+# CORS_ALLOWED_ORIGINS = [
+#     'localhost', 
+#     "127.0.0.1",
+#     "https://ur8.onrender.com",
+#     # Add other allowed origins here if needed
+# ]
+# CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = ['http://localhost', "http://127.0.0.1", 'https://pixelsprint.onrender.com', 'https://pixelsprint.onrender.com/*/', 'https://pixelsprint.onrender.com/sign-up/', 'https://pixelsprint.onrender.com/sign-in/']
+
+CSRF_COOKIE_DOMAIN = ['http://localhost', "http://127.0.0.1", 'https://pixelsprint.onrender.com', 'https://pixelsprint.onrender.com/*/', 'https://pixelsprint.onrender.com/sign-up/', 'https://pixelsprint.onrender.com/sign-in/']
+CSRF_COOKIE_PATH = ['http://localhost', "http://127.0.0.1", 'https://pixelsprint.onrender.com', 'https://pixelsprint.onrender.com/*/', 'https://pixelsprint.onrender.com/sign-up/', 'https://pixelsprint.onrender.com/sign-in/']
+
 # Add these lines at the end of your settings.py file
 
 # Media settings
