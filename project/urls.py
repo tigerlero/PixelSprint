@@ -25,7 +25,6 @@ urlpatterns = [
     path('tasks/update/<int:task_id>/', views.update_task, name='update_task'),
     path('tasks/delete/<int:task_id>/', views.delete_task, name='delete_task'),
     path('task_detail/<int:task_id>/', views.task_detail, name='task_detail'),
-    path('avatar/', include('avatar.urls')),
     path('notes/', views.note_list, name='note_list'),
     path('notes/<int:note_id>/', views.note_detail, name='note_detail'),
     path('notes/create/', views.create_note, name='create_note'),

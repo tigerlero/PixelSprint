@@ -2,7 +2,15 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>{{ userprofile.user.username }}</h1>
-  <p>XP: {{ userprofile.xp }}</p>
-  <!-- Add more details as needed -->
+  <div class="container mt-5">
+    <h1>{{ userprofile.user.username }}</h1>
+    <p>XP: {{ userprofile.xp }}</p>
+    <!-- Add more details as needed -->
+
+    <!-- Edit User Button -->
+    <a href="{% url 'update_userprofile' userprofile.id %}" class="btn btn-primary">Edit User</a>
+
+    <!-- Back to Homepage Button -->
+    <a href="{% url 'homepage' %}" class="btn btn-secondary ml-2">Back to Homepage</a>
+  </div>
 {% endblock %}

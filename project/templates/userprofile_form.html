@@ -1,5 +1,6 @@
-<!-- userprofile_form.html -->
 {% extends 'base.html' %}
+{% load static %}
+<!-- userprofile_form.html -->
 
 {% block content %}
   <div class="container mt-5">
@@ -13,4 +14,5 @@
     </form>
     <a href="{% url 'userprofile_list' %}" class="btn btn-secondary mt-3">Back to User Profiles</a>
   </div>
+
 {% endblock %}

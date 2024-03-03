@@ -54,11 +54,16 @@ class NoteForm(forms.ModelForm):
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['profile_picture']  # Exclude 'user' from fields
+        fields = ['profile_picture', 'color']  # Include 'color' in fields
 
     def __init__(self, *args, **kwargs):
         super(UserProfileForm, self).__init__(*args, **kwargs)
-        # You can customize the form fields if needed
-        self.fields['profile_picture'].widget = forms.ClearableFileInput(attrs={'class': 'form-control'})
+        # Customize the form fields
+        self.fields['profile_picture'].widget = forms.ClearableFileInput(attrs={'class': 'form-control' })
         self.fields['profile_picture'].label = 'Profile Picture'
         self.fields['profile_picture'].required = False
+
+        # Add color picker to 'color'
+        self.fields['color'].widget = forms.TextInput(attrs={'class': 'form-control', 'id': 'color-picker', 'type':"color" })
+        self.fields['color'].label = 'Avatar Color'
+        self.fields['color'].required = False
