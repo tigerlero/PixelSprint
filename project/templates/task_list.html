@@ -21,15 +21,7 @@
                 {% if task.status.name == project_status.name %}
                   <div class="card mb-1" data-task-id="{{ task.id }}">
                     <div class="card-body">
-                      <div class="float-right">
-                        {% if task.assigned_to.profile_picture %}
-                            <img src="{{ task.assigned_to.profile_picture.url }}" alt="{{ task.assigned_to }}" class="rounded-circle" width="30" height="30" style="cursor: pointer;" onclick="window.location.href='{% url 'user_profile_form' %}'">
-                        {% else %}
-                            <div class="custom-avatar" style="background-color: {{ task.assigned_to.color }};">
-                                {{ task.assigned_to|slice:":2"|lower }}
-                            </div>
-                        {% endif %}
-                      </div>
+
                       <div class="float-right" data-bs-placement="top" title="{% if task.priority == 'Critical' %}Critical{% elif task.priority == 'High' %}High{% elif task.priority == 'Medium' %}Medium{% elif task.priority == 'Low' %}Low{% endif %}">
                         <i class="bi {% if task.priority == 'Critical' %}bi-reception-4 text-danger{% elif task.priority == 'High' %}bi-reception-3 text-warning{% elif task.priority == 'Medium' %}bi-reception-2 text-info{% elif task.priority == 'Low' %}bi-reception-1 text-success{% endif %}" data-bs-toggle="modal" data-bs-target="#changePriorityModal{{ task.id }}"></i>
                       </div>
@@ -40,7 +32,15 @@
                       <div class="text-success" style="position: absolute; bottom: 0; right: 0;">
                         <i class="bi bi-controller"></i> {{ task.xp_reward }} XP
                       </div>
-
+                        <div class="float-right">
+                        {% if task.assigned_to.profile_picture %}
+                            <img src="{{ task.assigned_to.profile_picture.url }}" alt="{{ task.assigned_to }}" class="rounded-circle" width="30" height="30" style="cursor: pointer;" onclick="window.location.href='{% url 'userprofile_detail' task.assigned_to.id %}'">
+                        {% else %}
+                            <div class="custom-avatar" style="background-color: {{ task.assigned_to.color }};" onclick="window.location.href='{% url 'userprofile_detail' task.assigned_to.id %}'">
+                                {{ task.assigned_to|slice:":2"|lower }}
+                            </div>
+                        {% endif %}
+                    </div>
                       <a href="{% url 'update_task' task.id %}" class="btn btn-sm btn-warning">
                         <i class="bi bi-pencil"></i>
                       </a>
@@ -78,8 +78,6 @@
                 // Get the task ID and the new status
                 var taskId = evt.item.dataset.taskId;
                 var newstatus = evt.to.dataset.status;
-                console.log("newstatus");
-                console.log(newstatus);
 
                 // Get the index of the dragged item within the column
                 var newPosition = Array.from(evt.to.children).indexOf(evt.item) + 1;  // Add +1 to start position from 1
@@ -129,6 +127,7 @@
         color: white;  /* Text color */
         font-size: 12px;  /* Adjust font size as needed */
         font-weight: bold;
+        cursor: pointer;  /* Set the cursor style to pointer */
     }
 </style>
 {% endblock %}
