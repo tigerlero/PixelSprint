@@ -230,7 +230,9 @@ def task_list(request, project_id=None):
     if project_id:
         project = get_object_or_404(Project, id=project_id)
         tasks = Task.objects.filter(project=project).order_by('position', 'status').all()
-        project_statuses = project.status.all()
+        project_statuses = Status.objects.filter(project=project_id).all()
+        print(project_statuses)
+        print(project_id)
     else:
         tasks = Task.objects.order_by('position', 'status').all()
         project_statuses = Status.objects.all()  # Fetch all statuses
@@ -251,8 +253,8 @@ def task_list(request, project_id=None):
 
     # Include profile picture information in the context
     user_profile_picture = request.user.userprofile.profile_picture if hasattr(request.user, 'userprofile') else None
-    print(task_statuses)
-    print(project_statuses)
+    # print(task_statuses)
+    # print(project_statuses)
     return render(request, 'task_list.html', {
         'task_statuses': task_statuses,
         'form': TaskForm(),
@@ -272,10 +274,10 @@ def change_priority(request, task_id):
 
     if request.method == 'POST':
         new_priority = request.POST.get('priority')
-        print(f"Received new priority: {new_priority}")  # Add this line to check if data is received correctly
+        # print(f"Received new priority: {new_priority}")  # Add this line to check if data is received correctly
         task.priority = new_priority
         task.save()
-        print("Task priority updated successfully")  # Add this line to check if the task is saved successfully
+        # print("Task priority updated successfully")  # Add this line to check if the task is saved successfully
 
     return redirect('task_list')
 

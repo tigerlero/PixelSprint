@@ -3,18 +3,22 @@ from django import forms
 from django.contrib.auth.models import User
 from django.forms import DateInput
 
-from .models import Project, Task, Note, UserProfile
+from .models import Project, Task, Note, UserProfile, Status
 
 
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = ['title', 'description', 'start_date', 'end_date', 'team', 'xp_reward', 'status']
+        fields = ['title', 'description', 'start_date', 'end_date', 'team', 'xp_reward', 'statuses']
         widgets = {
             'start_date': DateInput(attrs={'type': 'date'}),
             'end_date': DateInput(attrs={'type': 'date'}),
         }
 
+    statuses = forms.ModelMultipleChoiceField(
+        queryset=Status.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+    )
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:

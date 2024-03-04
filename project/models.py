@@ -2,7 +2,9 @@
 import random
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Max
 from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class UserProfile(models.Model):
@@ -21,24 +23,36 @@ class UserProfile(models.Model):
         )
         return random_color
 
+    def update_xp(self):
+        # Get the last status ID
+        last_status_id = Status.objects.aggregate(last_id=Max('id'))['last_id']
+        print("status id")
+        print(last_status_id)
+        # Calculate XP from completed tasks with the last status ID
+        completed_tasks_xp = sum(task.xp_reward for task in self.assigned_tasks.filter(status=last_status_id))
+        print("completed_tasks_xp")
+        print(completed_tasks_xp)
+
+        # Update the user's XP
+        self.xp = completed_tasks_xp
+        self.save()
+
     def __str__(self):
         return self.user.username
 
+    @receiver(post_save, sender=User)
     def save_user_profile(sender, instance, created, **kwargs):
         if created:
             profile = UserProfile.objects.create(user=instance)
             profile.color = profile.generate_random_dark_color()
             profile.save()
-
-    # Connect the save_user_profile method to the post_save signal of User model
-    post_save.connect(save_user_profile, sender=User)
-    # Override the save method in User model
+        instance.userprofile.update_xp()
 
 
 class Status(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50, unique=False)
     color = models.CharField(max_length=20)
-
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='statuses')
     def __str__(self):
         return f"{self.name} - {self.color}"
 
@@ -50,7 +64,6 @@ class Project(models.Model):
     end_date = models.DateField()
     team = models.ManyToManyField(User, related_name='projects')
     xp_reward = models.PositiveIntegerField(default=2)
-    status = models.ManyToManyField(Status, related_name='projects')
 
     def __str__(self):
         return self.title
@@ -88,6 +101,17 @@ class Task(models.Model):
     status = models.ForeignKey(Status, on_delete=models.CASCADE, related_name='tasks', default=1)
 
     def save(self, *args, **kwargs):
+
+        if self.pk is not None:
+            original_task = Task.objects.get(pk=self.pk)
+            if original_task.project != self.project:
+                # Update Status reference for the old project
+                original_status = Status.objects.get(
+                    name=original_task.status.name,
+                    project=original_task.project
+                )
+                original_status.project = self.project
+                original_status.save()
         # Calculate xp_reward based on priority and difficulty
         priority_multiplier = {
             'Critical': 4,
@@ -110,6 +134,7 @@ class Task(models.Model):
         self.xp_reward = xp_reward
 
         super().save(*args, **kwargs)
+        self.assigned_to.update_xp()
 
     def __str__(self):
         return self.title
