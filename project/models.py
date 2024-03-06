@@ -26,12 +26,8 @@ class UserProfile(models.Model):
     def update_xp(self):
         # Get the last status ID
         last_status_id = Status.objects.aggregate(last_id=Max('id'))['last_id']
-        print("status id")
-        print(last_status_id)
         # Calculate XP from completed tasks with the last status ID
         completed_tasks_xp = sum(task.xp_reward for task in self.assigned_tasks.filter(status=last_status_id))
-        print("completed_tasks_xp")
-        print(completed_tasks_xp)
 
         # Update the user's XP
         self.xp = completed_tasks_xp
@@ -50,6 +46,7 @@ class UserProfile(models.Model):
 
 
 class Status(models.Model):
+    # THIS IS FOR WHICH STATUS IS WHICH TASK AND WHAT COLOR THE COLUMN AND A PROJECT HAS SET FROM STATUSES
     name = models.CharField(max_length=50, unique=False)
     color = models.CharField(max_length=20)
     project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='statuses')
@@ -64,6 +61,9 @@ class Project(models.Model):
     end_date = models.DateField()
     team = models.ManyToManyField(User, related_name='projects')
     xp_reward = models.PositiveIntegerField(default=2)
+    # Add a OneToOneField to represent the overall project status
+    overall_status = models.OneToOneField('Status', on_delete=models.CASCADE, related_name='project_status', null=True,
+                                          blank=True)
 
     def __str__(self):
         return self.title
