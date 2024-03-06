@@ -4,11 +4,27 @@ PixelSprint is a Django project for managing tasks and projects.
 
 ## Features
 
-- **Task Management**: Organize and track tasks using a Kanban-style board.
-- **User Profiles**: Customize your profile with a profile picture and other details.
-- **Gravatar Integration**: Automatically fetch user profile pictures from Gravatar.
-- **Priority Levels**: Assign priority levels to tasks (Critical, High, Medium, Low).
-- **XP Rewards**: Earn XP for completing tasks.
+It will include:
+- [x] Create Task
+- [x] Delete Task
+- [x] Update Basic Info of Task
+- [x] Display Priority of Task, Assigned User Image or Gravatar, Desciprion,
+- [x] Update Status and Position in Kanban Task
+- [x] Update Assigned User in Kanban Task
+- [x] Create Prohect
+- [x] Update Project
+- [x] Delete Project
+- [x] Get Tasks of Project
+- [x] Profil Image Uploading
+- [x] Profil Avator Color Choose
+- [x] XP gained if task is in last column of Kanban
+- [ ] Level Up based on XP
+- [x] Create Note
+- [x] Update Note
+- [x] Delete Note
+- [ ] Subtasks
+- [ ] Kanban for Project
+
 
 ## Getting Started
 
