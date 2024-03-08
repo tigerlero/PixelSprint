@@ -14,6 +14,9 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     xp = models.PositiveIntegerField(default=0)
@@ -158,3 +161,23 @@ class Note(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Comment(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comment by {self.author.username} on {self.task.title}"
+
+
+class Attachment(models.Model):
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, related_name='attachments')
+    file = models.FileField(upload_to='task_attachments/')
+    uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.file.name} - Uploaded by {self.uploaded_by.username}"
