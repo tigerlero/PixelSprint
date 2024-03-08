@@ -7,6 +7,13 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50)
+    color = models.CharField(max_length=20, default='grey')
+
+    def __str__(self):
+        return self.name
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     xp = models.PositiveIntegerField(default=0)
@@ -117,11 +124,11 @@ class Task(models.Model):
             'Critical': 4,
             'High': 3,
             'Medium': 2,
-            'Low': 1,  # You can adjust this as needed
+            'Low': 1,
         }
 
         difficulty_multiplier = {
-            'Easy': 1,  # You can adjust this as needed
+            'Easy': 1,
             'Medium': 2,
             'Hard': 3,
             'Very Hard': 4,
