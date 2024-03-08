@@ -9,7 +9,7 @@ from .models import Project, Task, Note, UserProfile, Status
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = ['title', 'description', 'start_date', 'end_date', 'team', 'xp_reward', 'statuses']
+        fields = ['title', 'description', 'start_date', 'end_date', 'team', 'xp_reward', 'statuses', 'overall_status']
         widgets = {
             'start_date': DateInput(attrs={'type': 'date'}),
             'end_date': DateInput(attrs={'type': 'date'}),

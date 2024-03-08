@@ -178,6 +178,7 @@ def create_or_update_project(request, project_id=None):
 
     if request.method == 'POST':
         form = ProjectForm(request.POST, instance=project)
+        print(form)
         if form.is_valid():
             form.save()
             return redirect('project_list')
