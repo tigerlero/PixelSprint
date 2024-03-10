@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h1>{{ list.name }}</h1>
+    <!-- Add more details as needed -->
+
+    <div class="btn-group" role="group" aria-label="List Actions">
+      <a href="{% url 'update_list' list.id %}" class="btn btn-primary">Update List</a>
+      <a href="{% url 'delete_list' list.id %}" class="btn btn-danger">Delete List</a>
+      <a href="{% url 'list_list' %}" class="btn btn-secondary">Back to Lists</a>
+    </div>
+  </div>
+{% endblock %}

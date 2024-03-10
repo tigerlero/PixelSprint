@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h1>Lists</h1>
+    <ul class="list-group">
+      {% for list in lists %}
+        <li class="list-group-item">
+          <a href="{% url 'list_detail' list.id %}">{{ list.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+    <a href="{% url 'list_form' %}" class="btn btn-primary mt-3">Create List</a>
+  </div>
+{% endblock %}

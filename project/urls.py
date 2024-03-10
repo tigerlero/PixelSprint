@@ -30,6 +30,26 @@ urlpatterns = [
     path('notes/create/', views.create_note, name='create_note'),
     path('notes/update/<int:note_id>/', views.update_note, name='update_note'),
     path('notes/delete/<int:note_id>/', views.delete_note, name='delete_note'),
+    # Paths for space views
+    path('space/create/', views.create_or_update_space, name='space_form'),
+    path('space/update/<int:space_id>/', views.create_or_update_space, name='update_space'),
+    path('space/', views.space_list, name='space_list'),
+    path('space/<int:space_id>/', views.space_detail, name='space_detail'),
+    path('space/delete/<int:space_id>/', views.delete_space, name='delete_space'),
+
+    # Paths for folder views
+    path('folder/create/', views.create_or_update_folder, name='folder_form'),
+    path('folder/update/<int:folder_id>/', views.create_or_update_folder, name='update_folder'),
+    path('folder/', views.folder_list, name='folder_list'),
+    path('folder/<int:folder_id>/', views.folder_detail, name='folder_detail'),
+    path('folder/delete/<int:folder_id>/', views.delete_folder, name='delete_folder'),
+
+    # Paths for list views
+    path('list/create/', views.create_or_update_list, name='list_form'),
+    path('list/update/<int:list_id>/', views.create_or_update_list, name='update_list'),
+    path('list/', views.list_list, name='list_list'),
+    path('list/<int:list_id>/', views.list_detail, name='list_detail'),
+    path('list/delete/<int:list_id>/', views.delete_list, name='delete_list'),
 
     path('userprofiles/', views.userprofile_list, name='userprofile_list'),
     path('userprofiles/<int:userprofile_id>/', views.userprofile_detail, name='userprofile_detail'),

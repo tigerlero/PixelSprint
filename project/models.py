@@ -15,6 +15,33 @@ class Tag(models.Model):
         return self.name
 
 
+class Space(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    members = models.ManyToManyField(User, related_name='spaces', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
+class Folder(models.Model):
+    name = models.CharField(max_length=100)
+    space = models.ForeignKey(Space, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
+
+class List(models.Model):
+    name = models.CharField(max_length=100)
+    folder = models.ForeignKey(Folder, on_delete=models.CASCADE, null=True, blank=True)
+    space = models.ForeignKey(Space, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
 
 
 class UserProfile(models.Model):
@@ -71,9 +98,9 @@ class Project(models.Model):
     end_date = models.DateField()
     team = models.ManyToManyField(User, related_name='projects')
     xp_reward = models.PositiveIntegerField(default=2)
+    tags = models.ManyToManyField(Tag, related_name='projects', blank=True)
     # Add a OneToOneField to represent the overall project status
-    overall_status = models.OneToOneField('Status', on_delete=models.CASCADE, related_name='project_status', null=True,
-                                          blank=True)
+    overall_status = models.ForeignKey('Status', on_delete=models.CASCADE, related_name='projects', null=True, blank=True)
 
     def __str__(self):
         return self.title
@@ -83,9 +110,24 @@ class Task(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='tasks')
+    list = models.ForeignKey(List, on_delete=models.CASCADE, default=1)
+    assignees = models.ManyToManyField(User, related_name='assigned_tasks', blank=True)
+    followers = models.ManyToManyField(User, related_name='followed_tasks', blank=True)
     assigned_to = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='assigned_tasks', unique=False)
     due_date = models.DateField()
+    updated_at = models.DateTimeField(auto_now=True)
+    completed_at = models.DateTimeField(blank=True, null=True)
+    estimated_time = models.DurationField(blank=True, null=True)
+    actual_time = models.DurationField(blank=True, null=True)
+    tags = models.ManyToManyField('Tag', related_name='tasks', blank=True)
     xp_reward = models.PositiveIntegerField(default=1)
+    parent_task = models.ForeignKey('self', on_delete=models.CASCADE, related_name='subtasks', null=True, blank=True)
+    dependency = models.ManyToManyField('self', symmetrical=False, related_name='dependent_tasks', blank=True)
+    progress = models.PositiveSmallIntegerField(default=0, blank=True, null=True)
+    repeat_interval = models.CharField(max_length=50, blank=True, null=True)
+    reminder = models.DateTimeField(blank=True, null=True)
+    is_private = models.BooleanField(default=False)
+    custom_fields = models.JSONField(blank=True, null=True)
     priority = models.CharField(
         max_length=20,
         choices=[

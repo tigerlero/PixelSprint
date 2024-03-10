@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h1>{{ space.name }}</h1>
+    <p>{{ space.description }}</p>
+    <!-- Add more details as needed -->
+
+    <div class="btn-group" role="group" aria-label="Space Actions">
+      <a href="{% url 'update_space' space.id %}" class="btn btn-primary">Update Space</a>
+      <a href="{% url 'delete_space' space.id %}" class="btn btn-danger">Delete Space</a>
+      <a href="{% url 'space_list' %}" class="btn btn-secondary">Back to Spaces</a>
+    </div>
+  </div>
+{% endblock %}

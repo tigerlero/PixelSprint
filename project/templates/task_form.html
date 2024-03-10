@@ -1,25 +1,35 @@
-<!-- task_form.html -->
 {% extends 'base.html' %}
 
 {% block content %}
-  <div class="container mt-5">
-    <h1>Create/Update Task</h1>
-    <form method="post" action="">
-      {% csrf_token %}
+<div class="container mt-5">
+  <h1>Create/Update Task</h1>
+  <form method="post" action="">
+    {% csrf_token %}
 
-      {% for field in form %}
-        <div class="form-group{% if field.errors %} has-error{% endif %}">
-          {{ field.label_tag }}
-          {{ field }}
-          {% if field.errors %}
-            <small class="text-danger">{{ field.errors }}</small>
-          {% endif %}
-        </div>
-      {% endfor %}
+    {% for field in form %}
+    <div class="form-group row{% if field.errors %} has-error{% endif %}">
+      <label class="col-sm-2 col-form-label">{{ field.label }}</label>
+      <div class="col-sm-10">
+        {{ field }}
+        {% if field.errors %}
+        <small class="text-danger">{{ field.errors }}</small>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
 
-
-      <button type="submit" class="btn btn-primary">Save</button>
-    </form>
-    <a href="{% url 'task_list' %}" class="btn btn-secondary mt-3">Back to Tasks</a>
-  </div>
+    <div class="form-group row">
+      <div class="col-sm-10 offset-sm-2">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{% url 'task_list' %}" class="btn btn-secondary">Back to Tasks</a>
+      </div>
+    </div>
+  </form>
+</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('.select2').select2();
+    });
+  </script>
 {% endblock %}

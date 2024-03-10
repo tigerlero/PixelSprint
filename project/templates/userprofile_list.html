@@ -1,11 +1,18 @@
-<!-- userprofile_list.html -->
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>User Profiles</h1>
-  <ul>
+<div class="container mt-5">
+  <h1 class="mb-4">User Profiles</h1>
+  <div class="list-group">
     {% for userprofile in userprofiles %}
-      <li><a href="{% url 'userprofile_detail' userprofile.id %}">{{ userprofile.user.username }}</a></li>
+      <a href="{% url 'userprofile_detail' userprofile.id %}" class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">{{ userprofile.user.username }}</h5>
+          <!-- Add any additional user profile details here -->
+        </div>
+        <!-- Add any additional user profile details here -->
+      </a>
     {% endfor %}
-  </ul>
+  </div>
+</div>
 {% endblock %}

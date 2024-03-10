@@ -1,24 +1,119 @@
 from django.contrib.auth.models import User
-from django.db.models import Max, F
+from django.db.models import *
 from django.shortcuts import render
 import hashlib
 # Create your views here.
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.http import HttpResponseRedirect, JsonResponse
-from .models import UserProfile, Project, Task, Note, Status
-from .forms import ProjectForm, TaskForm, NoteForm, UserProfileForm
+from .forms import *
 from itertools import groupby
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth import login
-from .models import Task
-from django.contrib.auth import logout
+from django.contrib.auth import login, logout
 
 from django.http import HttpResponseBadRequest
 from django.contrib.auth.decorators import login_required
-from .forms import UserProfileForm  # Import your UserProfileForm
+
+
+def list_list(request):
+    lists = List.objects.all()
+    return render(request, 'list_list.html', {'lists': lists})
+
+
+def space_list(request):
+    spaces = Space.objects.all()
+    return render(request, 'space_list.html', {'spaces': spaces})
+
+
+def folder_list(request):
+    folders = Folder.objects.all()
+    return render(request, 'folder_list.html', {'folders': folders})
+
+
+def list_detail(request, list_id):
+    list_obj = get_object_or_404(List, pk=list_id)
+    return render(request, 'list_detail.html', {'list': list_obj})
+
+
+def space_detail(request, space_id):
+    space_obj = get_object_or_404(Space, pk=space_id)
+    return render(request, 'space_detail.html', {'space': space_obj})
+
+
+def folder_detail(request, folder_id):
+    folder_obj = get_object_or_404(Folder, pk=folder_id)
+    return render(request, 'folder_detail.html', {'folder': folder_obj})
+
+
+def create_or_update_list(request, list_id=None):
+    if list_id:
+        list_obj = get_object_or_404(List, id=list_id)
+    else:
+        list_obj = None
+
+    if request.method == 'POST':
+        form = ListForm(request.POST, instance=list_obj)
+        if form.is_valid():
+            form.save()
+            return redirect('list_list')
+    else:
+        form = ListForm(instance=list_obj)
+
+    return render(request, 'list_form.html', {'form': form})
+
+
+def create_or_update_space(request, space_id=None):
+    if space_id:
+        space = get_object_or_404(Space, id=space_id)
+    else:
+        space = None
+
+    if request.method == 'POST':
+        form = SpaceForm(request.POST, instance=space)
+        if form.is_valid():
+            form.save()
+            return redirect('space_list')
+    else:
+        form = SpaceForm(instance=space)
+
+    return render(request, 'space_form.html', {'form': form})
+
+
+def create_or_update_folder(request, folder_id=None):
+    if folder_id:
+        folder = get_object_or_404(Folder, id=folder_id)
+    else:
+        folder = None
+
+    if request.method == 'POST':
+        form = FolderForm(request.POST, instance=folder)
+        if form.is_valid():
+            form.save()
+            return redirect('folder_list')
+    else:
+        form = FolderForm(instance=folder)
+
+    return render(request, 'folder_form.html', {'form': form})
+
+
+def delete_list(request, list_id):
+    list_obj = List.objects.get(pk=list_id)
+    list_obj.delete()
+    return redirect('list_deleted')
+
+
+def delete_space(request, space_id):
+    space_obj = Space.objects.get(pk=space_id)
+    space_obj.delete()
+    return redirect('space_deleted')
+
+
+def delete_folder(request, folder_id):
+    folder_obj = Folder.objects.get(pk=folder_id)
+    folder_obj.delete()
+    return redirect('folder_deleted')
 
 
 @login_required
@@ -42,7 +137,8 @@ def logout_view(request):
 
 
 for user in User.objects.all():
-        UserProfile.objects.get_or_create(user=user)
+    UserProfile.objects.get_or_create(user=user)
+
 
 def update_task_status(request, task_id, newstatus, new_position):
     task = Task.objects.get(pk=task_id)
@@ -78,10 +174,12 @@ def update_task_status(request, task_id, newstatus, new_position):
         # Moving between columns
         else:
             # Update positions of tasks in the new column
-            Task.objects.filter(status=status, position__gte=new_position).exclude(pk=task_id).update(position=F('position') + 1)
+            Task.objects.filter(status=status, position__gte=new_position).exclude(pk=task_id).update(
+                position=F('position') + 1)
 
             # Adjust positions of tasks in the old column
-            Task.objects.filter(status=old_status, position__gt=old_position).exclude(pk=task_id).update(position=F('position') - 1)
+            Task.objects.filter(status=old_status, position__gt=old_position).exclude(pk=task_id).update(
+                position=F('position') - 1)
 
         # Return a JSON response
         return JsonResponse({'message': 'Task status and position updated successfully', 'status': newstatus,
@@ -180,7 +278,22 @@ def create_or_update_project(request, project_id=None):
         form = ProjectForm(request.POST, instance=project)
         print(form)
         if form.is_valid():
-            form.save()
+            project = form.save(commit=False)
+
+
+            # Save the project first
+            project.save()
+
+            # Get the tag names entered by the user
+            tag_names = form.cleaned_data.get('tags')
+
+            # Split the tag names by comma and create tags
+            for tag_name in tag_names.split(','):
+                tag_name = tag_name.strip()  # Remove leading/trailing whitespace
+                if tag_name:
+                    tag, created = Tag.objects.get_or_create(name=tag_name)
+                    project.tags.add(tag)
+
             return redirect('project_list')
     else:
         form = ProjectForm(instance=project)
@@ -299,7 +412,10 @@ def create_task(request, status_name):
             # Set the new task's position to one greater than the maximum position
             task.position = max_position + 1 if max_position is not None else 1
 
+            # Save the task first to get an ID
             task.save()
+
+
             return redirect('task_list')
     else:
         form = TaskForm()

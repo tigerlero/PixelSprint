@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h1>{{ folder.name }}</h1>
+    <!-- Add more details as needed -->
+
+    <div class="btn-group" role="group" aria-label="Folder Actions">
+      <a href="{% url 'update_folder' folder.id %}" class="btn btn-primary">Update Folder</a>
+      <a href="{% url 'delete_folder' folder.id %}" class="btn btn-danger">Delete Folder</a>
+      <a href="{% url 'folder_list' %}" class="btn btn-secondary">Back to Folders</a>
+    </div>
+  </div>
+{% endblock %}

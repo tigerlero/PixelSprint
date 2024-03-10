@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h1>Spaces</h1>
+    <ul class="list-group">
+      {% for space in spaces %}
+        <li class="list-group-item">
+          <a href="{% url 'space_detail' space.id %}">{{ space.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+    <a href="{% url 'space_form' %}" class="btn btn-primary mt-3">Create Space</a>
+  </div>
+{% endblock %}
