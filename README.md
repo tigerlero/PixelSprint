@@ -22,7 +22,7 @@ It will include:
 - [x] Create Note
 - [x] Update Note
 - [x] Delete Note
-- [ ] Subtasks
+- [x] Subtasks
 - [ ] Kanban for Project
 
 
